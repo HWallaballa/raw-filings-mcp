@@ -2,6 +2,8 @@
 
 A **turn‑key template** you can open in **Cursor** (or any VS Code–compatible IDE) to deploy, monetize, and list a paid Model Context Protocol server that streams raw SEC filings.
 
+[![ModelArk](https://img.shields.io/badge/MCP‑ModelArk-live-green)](https://modelark.byteplus.com/tools)
+
 ---
 
 ## 1  Project Structure
@@ -254,6 +256,33 @@ assistant:
 ```
 
 > **Why add rules?** Cursor reads this file to align its code completions, refactors, and doc generation with your tech stack (Node 20 + TypeScript 5, Express, Jest) and security policies (no secrets in Git).
+
+---
+
+## 9 Troubleshooting
+
+### "Not indexed yet" error
+If you receive a "Not indexed yet" error when trying to fetch a filing, it means the filing hasn't been processed by the ingest script. New filings typically take about 12 hours to appear after SEC publication.
+
+Solution:
+1. Check if the accession number is correct
+2. Run the ingest script manually: `npm run ingest -- --days 7`
+3. Wait for the next scheduled ingest (runs nightly)
+
+### API Key issues
+If you receive a 401 Unauthorized error, check that:
+1. You're including the `x-api-key` header with your requests
+2. The API key is valid and not expired
+3. Your JWT_SECRET environment variable matches the one used to generate the key
+
+### Server not responding
+If the server isn't responding:
+1. Check that the Docker containers are running: `docker-compose ps`
+2. Verify database connectivity: `psql $DATABASE_URL -c "SELECT 1;"`
+3. Check the logs: `docker-compose logs -f api`
+
+### Rate limiting
+The server has a rate limit of 100 requests per minute. If you exceed this, you'll receive a 429 status code. Wait a minute before trying again.
 
 ---
 
