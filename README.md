@@ -200,11 +200,11 @@ Call `recordUsage` inside the auth middleware after quota check.
 
 ## 7  Roadmap for Monetization Upsells
 
-| Stage | New Endpoint                  | Extra Price  |
-| ----- | ----------------------------- | ------------ |
-| v1    | `/filing` (raw)               | \$0.003/call |
-| v1.1  | `/facts` (parsed XBRL)        | \$0.02/call  |
-| v2    | `/vector-search` (embeddings) | \$99/mo tier |
+| Stage | New Endpoint                  | Extra Price  | Status |
+| ----- | ----------------------------- | ------------ | ------ |
+| v1    | `/filing` (raw)               | \$0.003/call | ✅ Live |
+| v1.1  | `/facts` (parsed XBRL)        | \$0.02/call  | ✅ Live |
+| v2    | `/vector-search` (embeddings) | \$99/mo tier | 🔜 Coming |
 
 ---
 
@@ -283,6 +283,57 @@ If the server isn't responding:
 
 ### Rate limiting
 The server has a rate limit of 100 requests per minute. If you exceed this, you'll receive a 429 status code. Wait a minute before trying again.
+
+---
+
+## 10 XBRL Facts API
+
+The server now includes an endpoint to fetch parsed XBRL financial data from SEC filings.
+
+### Endpoint: `/facts`
+
+Fetches specific XBRL facts for a company:
+
+```bash
+# Get Apple's asset values
+curl -H 'x-api-key: YOUR_API_KEY' \
+  'https://api.yourserver.com/facts?cik=0000320193&tag=Assets'
+
+# Get revenue data
+curl -H 'x-api-key: YOUR_API_KEY' \
+  'https://api.yourserver.com/facts?cik=0000320193&tag=Revenues'
+```
+
+### Endpoint: `/facts/tags`
+
+Lists all available XBRL tags for a company:
+
+```bash
+curl -H 'x-api-key: YOUR_API_KEY' \
+  'https://api.yourserver.com/facts/tags?cik=0000320193'
+```
+
+### Common XBRL Tags
+
+Here are some frequently used XBRL tags:
+
+| Tag | Description | Taxonomy |
+| --- | ----------- | -------- |
+| Assets | Total assets | us-gaap |
+| Liabilities | Total liabilities | us-gaap |
+| StockholdersEquity | Total equity | us-gaap |
+| Revenues | Total revenues | us-gaap |
+| NetIncome | Net income | us-gaap |
+| CashAndCashEquivalentsAtCarryingValue | Cash on hand | us-gaap |
+| CommonStockSharesOutstanding | Shares outstanding | us-gaap |
+| EarningsPerShareBasic | Basic EPS | us-gaap |
+| EntityRegistrantName | Company name | dei |
+| TradingSymbol | Stock ticker | dei |
+
+### Pricing
+
+- `/filing` endpoint: $0.003 per request
+- `/facts` endpoint: $0.02 per request (higher price due to parsed data)
 
 ---
 

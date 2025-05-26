@@ -10,6 +10,18 @@ interface DecodedToken {
   exp: number;
 }
 
+// Extend Express Request type to include user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        keyId: string;
+        usage: number;
+      };
+    }
+  }
+}
+
 export default async function auth(req: Request, res: Response, next: NextFunction) {
   const apiKey = req.headers['x-api-key'];
   
@@ -22,8 +34,14 @@ export default async function auth(req: Request, res: Response, next: NextFuncti
     
     // Check if the user has exceeded their quota
     if (decoded.usage > decoded.freeQuota) {
-      // Record billable usage
-      await recordUsage(decoded.keyId);
+      // Determine endpoint for pricing
+      let endpoint = 'get_filing'; // default
+      if (req.path.startsWith('/facts')) {
+        endpoint = 'get_facts';
+      }
+      
+      // Record billable usage with endpoint information
+      await recordUsage(decoded.keyId, endpoint);
     }
     
     // Attach user info to request for downstream use

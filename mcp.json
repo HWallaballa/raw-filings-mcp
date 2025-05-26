@@ -14,6 +14,18 @@
           },
           "required": ["accession"]
         }
+      },
+      {
+        "name": "get_facts",
+        "description": "Fetch parsed XBRL facts for a specific company and financial metric.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "cik": { "type": "string", "description": "10‑digit CIK (e.g., 0000320193 for Apple)" },
+            "tag": { "type": "string", "description": "XBRL tag name (e.g., Assets, Revenues, NetIncome)" }
+          },
+          "required": ["cik", "tag"]
+        }
       }
     ],
     "auth": {
@@ -21,7 +33,10 @@
       "header": "x-api-key"
     },
     "pricing": {
-      "per_request_usd": 0.003,
+      "per_request_usd": {
+        "get_filing": 0.003,
+        "get_facts": 0.02
+      },
       "free_requests": 100
     }
   }
