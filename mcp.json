@@ -1,0 +1,27 @@
+{
+    "name": "raw_sec_filings",
+    "description": "Return the original HTML/PDF/XBRL for any 10‑K, 10‑Q, or 8‑K filed with the US SEC.",
+    "tools": [
+      {
+        "name": "get_filing",
+        "description": "Fetch a raw filing by ticker or CIK and accession number.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "ticker": { "type": "string", "description": "e.g. AAPL" },
+            "cik": { "type": "string", "description": "10‑digit CIK" },
+            "accession": { "type": "string", "description": "Accession without dashes" }
+          },
+          "required": ["accession"]
+        }
+      }
+    ],
+    "auth": {
+      "type": "api_key",
+      "header": "x-api-key"
+    },
+    "pricing": {
+      "per_request_usd": 0.003,
+      "free_requests": 100
+    }
+  }

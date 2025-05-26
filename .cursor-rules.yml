@@ -1,0 +1,40 @@
+# .cursor-rules.yml
+version: 1
+
+## Global defaults (apply to every suggestion)
+global:
+  language: typescript
+  target_node_version: "20"
+  code_style:
+    indent: 2
+    semicolons: true
+    quotes: single
+    trailing_commas: all
+  testing: jest
+  env_file: .env.example
+  docker_required: true
+  forbidden_packages:
+    - axios            # use fetch / aws‑sdk instead
+    - request          # deprecated
+
+## Directory‑specific guidance
+paths:
+  src/routes:
+    description: "Express route handlers must be async and use the typed Request/Response generics from @types/express."
+    guard_clauses: true
+  src/lib:
+    description: "Utility functions must be fully typed and avoid any. Include JSDoc for public helpers."
+    avoid_any: true
+  scripts:
+    description: "CLI / cron scripts must exit with proper codes (0 success, 1 error) and log using pino."
+
+## Security & secrets
+security:
+  block_committing_secrets: true
+  recommended_secret_manager: "Fly.io Machines secrets"
+
+## AI assistant behavioural rules
+assistant:
+  preferred_format: "add new code as complete files or full diff patches — no inline snippets"
+  refuse_unrelated_requests: true
+  summarise_changes_after_generation: true 
