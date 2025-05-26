@@ -93,6 +93,85 @@ async function getDailyIndexUrls(daysBack: number): Promise<string[]> {
   return urls;
 }
 
+async function parseIndexFile(filePath: string): Promise<Array<{
+  cik: string;
+  companyName: string;
+  formType: string;
+  dateFiled: string;
+  filename: string;
+  accession: string;
+}>> {
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  const filings: Array<any> = [];
+  
+  let dataStarted = false;
+  
+  for (const line of lines) {
+    // Skip header lines until we reach the data section
+    if (line.includes('CIK|Company Name|Form Type|Date Filed|Filename')) {
+      dataStarted = true;
+      continue;
+    }
+    
+    if (!dataStarted || line.trim() === '') {
+      continue;
+    }
+    
+    const parts = line.split('|');
+    if (parts.length >= 5) {
+      const [cik, companyName, formType, dateFiled, filename] = parts;
+      
+      // Only process 10-K, 10-Q, and 8-K forms
+      if (['10-K', '10-Q', '8-K'].includes(formType)) {
+        // Extract accession number from filename
+        const accessionMatch = filename.match(/(\d{10}-\d{2}-\d{6})/);
+        if (accessionMatch) {
+          const accession = accessionMatch[1].replace(/-/g, '');
+          filings.push({
+            cik: cik.padStart(10, '0'),
+            companyName,
+            formType,
+            dateFiled,
+            filename,
+            accession
+          });
+        }
+      }
+    }
+  }
+  
+  return filings;
+}
+
+async function processFiling(filing: any, tempDir: string): Promise<void> {
+  try {
+    // Construct the filing URL
+    const filingUrl = `${SEC_BASE}/Archives/${filing.filename}`;
+    const localPath = path.join(tempDir, `${filing.accession}.txt`);
+    
+    console.log(`Downloading ${filing.companyName} (${filing.formType}): ${filing.accession}`);
+    await downloadFile(filingUrl, localPath);
+    
+    // Generate a hash-based key for S3
+    const hash = crypto.createHash('md5').update(filing.accession).digest('hex');
+    const s3Key = `filings/${hash.substring(0, 2)}/${hash.substring(2, 4)}/${filing.accession}.txt`;
+    
+    console.log(`Uploading to S3: ${s3Key}`);
+    await uploadToS3(localPath, s3Key);
+    
+    console.log(`Recording in database: ${filing.accession}`);
+    await recordInDatabase(filing.accession, s3Key, filing.cik, undefined, filing.formType);
+    
+    // Clean up
+    fs.unlinkSync(localPath);
+    
+  } catch (error) {
+    console.error(`Error processing filing ${filing.accession}:`, error);
+    // Continue with other filings
+  }
+}
+
 async function main() {
   try {
     // Create database table if it doesn't exist
@@ -117,33 +196,43 @@ async function main() {
       fs.mkdirSync(tempDir);
     }
     
-    // Process for demonstration (in production, parse the actual index files)
-    // For now, just process one example filing
-    const exampleAccession = '000032019323000064';
-    const exampleCik = '0000320193'; // Apple
-    const exampleTicker = 'AAPL';
-    const exampleFormType = '10-K';
-    const filingUrl = `${SEC_BASE}/Archives/edgar/data/${exampleCik.replace('0000', '')}/${exampleAccession}/${exampleAccession}.txt`;
+    let totalFilings = 0;
     
-    const localPath = path.join(tempDir, `${exampleAccession}.txt`);
+    // Process each daily index file
+    for (const indexUrl of indexUrls) {
+      try {
+        console.log(`Processing index: ${indexUrl}`);
+        const indexPath = path.join(tempDir, `index_${Date.now()}.idx`);
+        
+        await downloadFile(indexUrl, indexPath);
+        const filings = await parseIndexFile(indexPath);
+        
+        console.log(`Found ${filings.length} relevant filings in this index`);
+        
+        // Process filings in batches to avoid overwhelming the SEC servers
+        const batchSize = 5;
+        for (let i = 0; i < filings.length; i += batchSize) {
+          const batch = filings.slice(i, i + batchSize);
+          await Promise.all(batch.map(filing => processFiling(filing, tempDir)));
+          
+          // Rate limiting: wait 1 second between batches
+          if (i + batchSize < filings.length) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+        
+        totalFilings += filings.length;
+        
+        // Clean up index file
+        fs.unlinkSync(indexPath);
+        
+      } catch (error) {
+        console.error(`Error processing index ${indexUrl}:`, error);
+        // Continue with other index files
+      }
+    }
     
-    console.log(`Downloading ${filingUrl}`);
-    await downloadFile(filingUrl, localPath);
-    
-    // Generate a hash-based key for S3
-    const hash = crypto.createHash('md5').update(exampleAccession).digest('hex');
-    const s3Key = `filings/${hash.substring(0, 2)}/${hash.substring(2, 4)}/${exampleAccession}.txt`;
-    
-    console.log(`Uploading to S3: ${s3Key}`);
-    await uploadToS3(localPath, s3Key);
-    
-    console.log(`Recording in database: ${exampleAccession}`);
-    await recordInDatabase(exampleAccession, s3Key, exampleCik, exampleTicker, exampleFormType);
-    
-    // Clean up
-    fs.unlinkSync(localPath);
-    
-    console.log('Ingest complete!');
+    console.log(`Ingest complete! Processed ${totalFilings} filings.`);
     process.exit(0);
   } catch (error) {
     console.error('Error during ingest:', error);
