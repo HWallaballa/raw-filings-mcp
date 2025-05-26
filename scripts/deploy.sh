@@ -27,7 +27,7 @@ fi
 
 # Build and deploy
 echo "📦 Building and deploying application..."
-flyctl deploy --region iad
+flyctl deploy --primary-region iad
 
 # Set secrets from .env file
 echo "🔐 Setting up secrets..."

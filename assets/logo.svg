@@ -1,0 +1,21 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="200" cy="200" r="180" fill="#1e40af" stroke="#3b82f6" stroke-width="8"/>
+  
+  <!-- Document icon -->
+  <rect x="120" y="100" width="120" height="160" rx="8" fill="white"/>
+  <rect x="120" y="100" width="120" height="40" rx="8" fill="#3b82f6"/>
+  
+  <!-- SEC text -->
+  <text x="200" y="130" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">SEC</text>
+  
+  <!-- Document lines -->
+  <line x1="140" y1="170" x2="220" y2="170" stroke="#6b7280" stroke-width="2"/>
+  <line x1="140" y1="190" x2="200" y2="190" stroke="#6b7280" stroke-width="2"/>
+  <line x1="140" y1="210" x2="210" y2="210" stroke="#6b7280" stroke-width="2"/>
+  <line x1="140" y1="230" x2="190" y2="230" stroke="#6b7280" stroke-width="2"/>
+  
+  <!-- MCP text at bottom -->
+  <text x="200" y="320" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">MCP</text>
+  <text x="200" y="345" text-anchor="middle" fill="#93c5fd" font-family="Arial, sans-serif" font-size="14">Raw Filings</text>
+</svg> 

@@ -1,8 +1,9 @@
 FROM node:20-slim
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install
 COPY . .
 RUN npm run build
+RUN npm prune --omit=dev
 EXPOSE 8080
-CMD ["node","dist/index.js"]
+CMD ["node","dist/src/index.js"]

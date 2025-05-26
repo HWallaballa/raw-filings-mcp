@@ -1,8 +1,47 @@
-# Raw Filings MCP Server — Starter Kit
+# Raw SEC Filings MCP Server
 
-A **turn‑key template** you can open in **Cursor** (or any VS Code–compatible IDE) to deploy, monetize, and list a paid Model Context Protocol server that streams raw SEC filings.
+[![ModelArk](https://img.shields.io/badge/ModelArk-Raw%20SEC%20Filings-blue)](https://github.com/hwallaballa/raw-filings-mcp)
 
-[![ModelArk](https://img.shields.io/badge/MCP‑ModelArk-live-green)](https://modelark.byteplus.com/tools)
+> **🚀 Quick Install**: Add this MCP server to Claude Desktop or Cursor in under 2 minutes!
+
+## 📦 One-Click Installation
+
+### For Claude Desktop Users
+
+Add this to your Claude Desktop MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "raw-sec-filings": {
+      "command": "npx",
+      "args": ["-y", "@raw-filings/mcp-server"],
+      "env": {
+        "RAW_FILINGS_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+### For Cursor Users
+
+1. Install via npm: `npm install -g @raw-filings/mcp-server`
+2. Add to your Cursor MCP config
+3. Get your API key from: https://raw-filings-mcp.fly.dev
+
+### Manual Installation
+
+```bash
+# Clone and install
+git clone https://github.com/hwallaballa/raw-filings-mcp.git
+cd raw-filings-mcp
+npm install
+npm run build
+
+# Start the server
+npm start
+```
 
 ---
 
@@ -143,7 +182,7 @@ export async function fetchFiling({ ticker, cik, accession }:{ticker?:string,cik
 
 ## 3  Quick‑Start in Cursor
 
-1. **Clone** the repo in Cursor: `git clone https://github.com/yourname/raw-filings-mcp.git`.
+1. **Clone** the repo in Cursor: `git clone https://github.com/hwallaballa/raw-filings-mcp.git`.
 2. Copy `.env.example` → `.env` and fill:
 
    ```env
