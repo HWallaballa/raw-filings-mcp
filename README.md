@@ -1,6 +1,6 @@
 # Raw SEC Filings MCP Server
 
-[![ModelArk](https://img.shields.io/badge/ModelArk-Raw%20SEC%20Filings-blue)](https://github.com/hwallaballa/raw-filings-mcp)
+[![ModelArk](https://img.shields.io/badge/ModelArk-Raw%20SEC%20Filings-blue)](https://github.com/HWallaballa/raw-filings-mcp)
 
 > **🚀 Quick Install**: Add this MCP server to Claude Desktop or Cursor in under 2 minutes!
 
@@ -34,7 +34,7 @@ Add this to your Claude Desktop MCP configuration:
 
 ```bash
 # Clone and install
-git clone https://github.com/hwallaballa/raw-filings-mcp.git
+git clone https://github.com/HWallaballa/raw-filings-mcp.git
 cd raw-filings-mcp
 npm install
 npm run build
@@ -182,7 +182,7 @@ export async function fetchFiling({ ticker, cik, accession }:{ticker?:string,cik
 
 ## 3  Quick‑Start in Cursor
 
-1. **Clone** the repo in Cursor: `git clone https://github.com/hwallaballa/raw-filings-mcp.git`.
+1. **Clone** the repo in Cursor: `git clone https://github.com/HWallaballa/raw-filings-mcp.git`.
 2. Copy `.env.example` → `.env` and fill:
 
    ```env
