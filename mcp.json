@@ -34,7 +34,7 @@
     },
     "pricing": {
       "per_request_usd": {
-        "get_filing": 0.003,
+        "get_filing": 0.03,
         "get_facts": 0.02
       }
     }
