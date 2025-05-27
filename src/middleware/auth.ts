@@ -5,7 +5,6 @@ import { recordUsage } from '../lib/billing';
 interface DecodedToken {
   keyId: string;
   usage: number;
-  freeQuota: number;
   iat: number;
   exp: number;
 }
@@ -32,17 +31,14 @@ export default async function auth(req: Request, res: Response, next: NextFuncti
   try {
     const decoded = jwt.verify(apiKey, process.env.JWT_SECRET!) as DecodedToken;
     
-    // Check if the user has exceeded their quota
-    if (decoded.usage > decoded.freeQuota) {
-      // Determine endpoint for pricing
-      let endpoint = 'get_filing'; // default
-      if (req.path.startsWith('/facts')) {
-        endpoint = 'get_facts';
-      }
-      
-      // Record billable usage with endpoint information
-      await recordUsage(decoded.keyId, endpoint);
+    // Determine endpoint for pricing
+    let endpoint = 'get_filing'; // default
+    if (req.path.startsWith('/facts')) {
+      endpoint = 'get_facts';
     }
+    
+    // Record billable usage for every request (no free tier)
+    await recordUsage(decoded.keyId, endpoint);
     
     // Attach user info to request for downstream use
     req.user = {

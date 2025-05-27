@@ -36,7 +36,6 @@
       "per_request_usd": {
         "get_filing": 0.003,
         "get_facts": 0.02
-      },
-      "free_requests": 100
+      }
     }
   }

@@ -98,8 +98,7 @@ raw-filings-mcp/
     "header": "x-api-key"
   },
   "pricing": {
-    "per_request_usd": 0.003,
-    "free_requests": 100
+    "per_request_usd": 0.003
   }
 }
 ```
@@ -239,11 +238,11 @@ Call `recordUsage` inside the auth middleware after quota check.
 
 ## 7  Roadmap for Monetization Upsells
 
-| Stage | New Endpoint                  | Extra Price  | Status |
+| Stage | New Endpoint                  | Price        | Status |
 | ----- | ----------------------------- | ------------ | ------ |
-| v1    | `/filing` (raw)               | \$0.003/call | ✅ Live |
-| v1.1  | `/facts` (parsed XBRL)        | \$0.02/call  | ✅ Live |
-| v2    | `/vector-search` (embeddings) | \$99/mo tier | 🔜 Coming |
+| v1    | `/filing` (raw)               | $0.003/call | ✅ Live |
+| v1.1  | `/facts` (parsed XBRL)        | $0.02/call  | ✅ Live |
+| v2    | `/vector-search` (embeddings) | $99/mo tier | 🔜 Coming |
 
 ---
 
@@ -373,6 +372,7 @@ Here are some frequently used XBRL tags:
 
 - `/filing` endpoint: $0.003 per request
 - `/facts` endpoint: $0.02 per request (higher price due to parsed data)
+- No free tier - pay per use only
 
 ---
 
